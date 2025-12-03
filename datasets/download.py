@@ -16,7 +16,7 @@ import sys
 # === Chemins de base ===
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))     # Dossier du script
 json_path = os.path.join(SCRIPT_DIR, "tick.json")           # Fichier des tickers
-OUTPUT_DIR = os.path.join(SCRIPT_DIR, "data")               # Dossier de sortie
+OUTPUT_DIR = os.path.join(SCRIPT_DIR, "")               # Dossier de sortie
 
 # === Paramètres généraux ===
 START_DATE = "2015-01-01"   # Date de début de l’historique
