@@ -2,21 +2,7 @@ import numpy as np
 import pandas as pd
 from scipy.optimize import minimize
 
-
-def f_returns(df:pd.DataFrame) -> pd.DataFrame:
-    return np.log(df / df.shift(1)).dropna()
-
-def f_mu(returns: pd.DataFrame) -> pd.Series:
-    return returns.mean() * 252
-
-def f_sigma(returns: pd.DataFrame) -> pd.DataFrame:
-    return returns.cov() * 252
-
-def f_rendement(w, mu):
-    return np.dot(w, mu)
-
-def f_risque(w, Sigma):
-    return np.dot(w, np.dot(Sigma, w))
+from src.portfolio_utils import *
 
 
 def f_objective(w, lambda_param, mu, Sigma):
