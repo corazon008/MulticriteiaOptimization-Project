@@ -4,15 +4,19 @@ from tqdm import tqdm
 import math
 
 import portfolio_utils
-from level1.functions import  *
+from level2.cardinality_epsilon import optimize
+from src.level1.functions import *
 
-df = portfolio_utils.load_datas()
 
-lambdas = np.linspace(0, 1, 50)
-num_assets = df.shape[1]
-number_of_shares = 2
+
+
 
 if __name__ == "__main__":
-    from src.level2.cardinality_BF import optimize
-
-    fr, fv, fw = optimize(df, 2)
+    df = portfolio_utils.load_datas()
+    returns = f_returns(df)
+    mu = f_mu(returns).to_numpy()
+    Sigma = f_sigma(returns).to_numpy()
+    fr, fv, fw = optimize(mu, Sigma)
+    print("Rendements optimaux :", fr)
+    print("Risques optimaux :", fv)
+    print("Poids optimaux :", fw)
