@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 from scipy.optimize import minimize
 
-from src.portfolio_utils import *
+from portfolio_utils import *
 
 
 def f_objective(w, lambda_param, mu, Sigma):

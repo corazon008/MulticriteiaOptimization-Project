@@ -1,7 +1,7 @@
 import cvxpy as cp
 import numpy as np
 
-from src.portfolio_utils import f_rendement, f_risque
+from portfolio_utils import f_rendement, f_risque
 
 def optimize(mu: np.ndarray, Sigma: np.ndarray,  K: int, epsilons: np.ndarray, lambda_penalty: float) -> tuple[list[float], list[float], list[np.ndarray]]:
     n = mu.shape[0]

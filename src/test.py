@@ -5,10 +5,7 @@ import math
 
 import portfolio_utils
 from level2.cardinality_epsilon import optimize
-from src.level1.functions import *
-
-
-
+from level1.functions import *
 
 
 if __name__ == "__main__":
@@ -16,7 +13,9 @@ if __name__ == "__main__":
     returns = f_returns(df)
     mu = f_mu(returns).to_numpy()
     Sigma = f_sigma(returns).to_numpy()
-    fr, fv, fw = optimize(mu, Sigma)
+    K = 3  # Nombre d'actifs à sélectionner
+    epsilons = np.linspace(0.0001, 0.01, 10)
+    fr, fv, fw = optimize(mu, Sigma, K, epsilons)
     print("Rendements optimaux :", fr)
     print("Risques optimaux :", fv)
     print("Poids optimaux :", fw)

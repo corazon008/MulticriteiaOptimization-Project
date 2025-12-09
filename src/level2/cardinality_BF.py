@@ -4,8 +4,8 @@ from tqdm import tqdm
 import math
 import pandas as pd
 
-from src.portfolio_utils import *
-from src.level1.functions import optimize_portfolio
+from portfolio_utils import *
+from level1.functions import optimize_portfolio
 
 # ---- Variables globales pour partager df/lambdas sans les pickliser 1000 fois ---- #
 df_global = None
