@@ -7,6 +7,5 @@ Multicriteria Optimization Project
 # Requirements
 ```
 uv sync
-uv run --editable .
 uv pip install -e .
 ```
