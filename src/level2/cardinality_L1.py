@@ -1,7 +1,7 @@
 import cvxpy as cp
 import numpy as np
 
-from portfolio_utils import f_rendement, f_risque
+from portfolio_utils import f_yield, f_volatility
 
 def optimize(mu: np.ndarray, Sigma: np.ndarray,  K: int, epsilons: np.ndarray, lambda_penalty: float) -> tuple[list[float], list[float], list[np.ndarray]]:
     n = mu.shape[0]
@@ -9,7 +9,7 @@ def optimize(mu: np.ndarray, Sigma: np.ndarray,  K: int, epsilons: np.ndarray, l
     # ----------------------------
     # Résultats
     # ----------------------------
-    frontier_returns = []
+    frontier_yield = []
     frontier_volatilities = []
     frontier_weights = []
 
@@ -47,11 +47,11 @@ def optimize(mu: np.ndarray, Sigma: np.ndarray,  K: int, epsilons: np.ndarray, l
         w_sparse /= w_sparse.sum()  # renormaliser pour que sum=1
 
         # Stockage des résultats
-        ret_val = f_rendement(w_sparse, mu)
-        risk_val = np.sqrt(f_risque(w_sparse, Sigma))
+        yields_val = f_yield(w_sparse, mu)
+        risk_val = np.sqrt(f_volatility(w_sparse, Sigma))
 
-        frontier_returns.append(ret_val)
+        frontier_yield.append(yields_val)
         frontier_volatilities.append(risk_val)
         frontier_weights.append(w_sparse)
 
-    return frontier_returns, frontier_volatilities, frontier_weights
+    return frontier_yield, frontier_volatilities, frontier_weights

@@ -23,9 +23,9 @@ def worker(possibility):
     selected_columns = df.columns[list(possibility)]
     temp_df = df[selected_columns]
 
-    returns = f_returns(temp_df)
-    mu = f_mu(returns)
-    Sigma = f_sigma(returns)
+    returns = f_returns_on_df(temp_df)
+    mu = f_mu_on_df(returns)
+    Sigma = f_sigma_on_df(returns)
 
     return optimize_portfolio(lambdas, mu, Sigma)
 
@@ -37,7 +37,7 @@ def optimize(df: pd.DataFrame, number_of_shares: int, lambdas: np.ndarray, max_w
     # Nombre total de combinaisons (pour tqdm)
     total = math.comb(num_assets, number_of_shares)
 
-    frontier_returns = []
+    frontier_yield = []
     frontier_volatilities = []
     frontier_weights = []
 
@@ -52,8 +52,8 @@ def optimize(df: pd.DataFrame, number_of_shares: int, lambdas: np.ndarray, max_w
             total=total,
             desc="Optimizing"
         ):
-            frontier_returns.append(fr)
+            frontier_yield.append(fr)
             frontier_volatilities.append(fv)
             frontier_weights.append(fw)
 
-    return frontier_returns, frontier_volatilities, frontier_weights
+    return frontier_yield, frontier_volatilities, frontier_weights

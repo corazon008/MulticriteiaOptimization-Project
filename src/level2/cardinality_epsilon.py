@@ -19,7 +19,7 @@ def optimize(mu: np.ndarray, Sigma: np.ndarray,  K: int, epsilons: np.ndarray) -
     z = cp.Variable(n, boolean=True)  # variables binaires pour la cardinalité
 
     # Résultats stockés
-    frontier_returns = []
+    frontier_yield = []
     frontier_risks = []
     weights = []
 
@@ -50,8 +50,8 @@ def optimize(mu: np.ndarray, Sigma: np.ndarray,  K: int, epsilons: np.ndarray) -
         ret_val = float(mu @ w_val)
         risk_val = float(w_val.T @ Sigma @ w_val)
 
-        frontier_returns.append(ret_val)
+        frontier_yield.append(ret_val)
         frontier_risks.append(risk_val)
         weights.append(w_val)
 
-    return np.array(frontier_returns), np.array(frontier_risks), weights
+    return np.array(frontier_yield), np.array(frontier_risks), weights
