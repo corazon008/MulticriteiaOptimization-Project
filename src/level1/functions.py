@@ -22,8 +22,8 @@ def optimize_portfolio(lambdas, mu: np.ndarray, Sigma: np.ndarray) -> tuple[np.n
     initial_guess = np.array(num_assets * [1. / num_assets])
 
     # Générer la frontière efficiente en variant lambda
-    frontier_yield = []
-    frontier_volatilities = []
+    frontier_yields = []
+    frontier_volatility = []
     frontier_weights = []
 
     for lambda_param in lambdas:
@@ -31,14 +31,14 @@ def optimize_portfolio(lambdas, mu: np.ndarray, Sigma: np.ndarray) -> tuple[np.n
                           constraints=constraints)
         if result.success:
             w_opt = result.x
-            frontier_yield.append(f_yield(w_opt, mu))
-            frontier_volatilities.append(f_volatility(w_opt, Sigma))
+            frontier_yields.append(f_yield(w_opt, mu))
+            frontier_volatility.append(f_volatility(w_opt, Sigma))
             frontier_weights.append(w_opt)
         else:
             print(f"Optimization failed for lambda={lambda_param}")
 
     # Convertir en arrays numpy pour faciliter l'analyse
-    frontier_yield = np.array(frontier_yield)
-    frontier_volatilities = np.array(frontier_volatilities)
+    frontier_yields = np.array(frontier_yields)
+    frontier_volatility = np.array(frontier_volatility)
 
-    return frontier_yield, frontier_volatilities, frontier_weights
+    return frontier_yields, frontier_volatility, frontier_weights

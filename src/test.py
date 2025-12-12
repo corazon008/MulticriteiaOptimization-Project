@@ -6,16 +6,10 @@ import math
 import portfolio_utils
 from level2.cardinality_epsilon import optimize
 from level1.functions import *
+from portfolio_utils import f_share_stats
 
 
 if __name__ == "__main__":
     df = portfolio_utils.load_datas()
-    returns = f_returns_on_df(df)
-    mu = f_mu_on_df(returns).to_numpy()
-    Sigma = f_sigma_on_df(returns).to_numpy()
-    K = 3  # Nombre d'actifs à sélectionner
-    epsilons = np.linspace(0.0001, 0.01, 10)
-    fr, fv, fw = optimize(mu, Sigma, K, epsilons)
-    print("Rendements optimaux :", fr)
-    print("Risques optimaux :", fv)
-    print("Poids optimaux :", fw)
+    print(f_share_stats(df, "ANET"))
+    print(f_share_stats(df, "NVDA"))

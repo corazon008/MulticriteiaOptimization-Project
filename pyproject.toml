@@ -7,6 +7,7 @@ requires-python = ">=3.13"
 dependencies = [
     "cvxpy>=1.7.4",
     "ecos>=2.0.14",
+    "jupyterlab>=4.5.0",
     "matplotlib>=3.10.7",
     "notebook>=7.5.0",
     "numpy>=2.3.5",
@@ -14,6 +15,7 @@ dependencies = [
     "pip>=25.3",
     "plotly>=6.5.0",
     "pymoo>=0.6.1.6",
+    "pyscipopt>=6.0.0",
     "streamlit>=1.52.0",
     "tqdm>=4.67.1",
     "yfinance>=0.2.66",

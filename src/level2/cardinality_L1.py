@@ -2,6 +2,7 @@ import cvxpy as cp
 import numpy as np
 
 from portfolio_utils import f_yield, f_volatility
+from level2.functions import nb_not_null_weights
 
 def optimize(mu: np.ndarray, Sigma: np.ndarray,  K: int, epsilons: np.ndarray, lambda_penalty: float) -> tuple[list[float], list[float], list[np.ndarray]]:
     n = mu.shape[0]
@@ -9,8 +10,6 @@ def optimize(mu: np.ndarray, Sigma: np.ndarray,  K: int, epsilons: np.ndarray, l
     # ----------------------------
     # Résultats
     # ----------------------------
-    frontier_yield = []
-    frontier_volatilities = []
     frontier_weights = []
 
     # ----------------------------
@@ -47,11 +46,12 @@ def optimize(mu: np.ndarray, Sigma: np.ndarray,  K: int, epsilons: np.ndarray, l
         w_sparse /= w_sparse.sum()  # renormaliser pour que sum=1
 
         # Stockage des résultats
-        yields_val = f_yield(w_sparse, mu)
-        risk_val = np.sqrt(f_volatility(w_sparse, Sigma))
 
-        frontier_yield.append(yields_val)
-        frontier_volatilities.append(risk_val)
         frontier_weights.append(w_sparse)
 
-    return frontier_yield, frontier_volatilities, frontier_weights
+    frontier_weights = np.array([w for w in frontier_weights if nb_not_null_weights(w, 1e-4) == K])
+
+    frontier_yields = np.array([f_yield(w, mu) for w in frontier_weights])
+    frontier_volatility = np.array([f_volatility(w, Sigma) for w in frontier_weights])
+
+    return frontier_yields, frontier_volatility, frontier_weights

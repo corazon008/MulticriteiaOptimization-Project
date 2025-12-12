@@ -37,8 +37,8 @@ def optimize(df: pd.DataFrame, number_of_shares: int, lambdas: np.ndarray, max_w
     # Nombre total de combinaisons (pour tqdm)
     total = math.comb(num_assets, number_of_shares)
 
-    frontier_yield = []
-    frontier_volatilities = []
+    frontier_yields = []
+    frontier_volatility = []
     frontier_weights = []
 
     with ProcessPoolExecutor(
@@ -52,8 +52,8 @@ def optimize(df: pd.DataFrame, number_of_shares: int, lambdas: np.ndarray, max_w
             total=total,
             desc="Optimizing"
         ):
-            frontier_yield.append(fr)
-            frontier_volatilities.append(fv)
+            frontier_yields.append(fr)
+            frontier_volatility.append(fv)
             frontier_weights.append(fw)
 
-    return frontier_yield, frontier_volatilities, frontier_weights
+    return frontier_yields, frontier_volatility, frontier_weights
