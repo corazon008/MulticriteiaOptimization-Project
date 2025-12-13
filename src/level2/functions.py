@@ -76,6 +76,9 @@ class CardinalityRepair(Repair):
 
 def optimize(mu: pd.Series, Sigma: pd.Series, w0: np.ndarray, K: int, delta_tol, population_size: int = 100, generations: int = 200, c:float=0.01) -> tuple[np.ndarray,np.ndarray,np.ndarray,np.ndarray]:
 
+    if delta_tol > 1.0 / K:
+        raise ValueError("delta_tol must be less than or equal to 1/K")
+
     problem = PortfolioNSGA2(mu, Sigma, w0, K, delta_tol=delta_tol, c=c)
 
     algorithm = NSGA2(
@@ -118,7 +121,7 @@ if __name__ == "__main__":
     w0[2] = 1.0  # Tout investir sur NVIDIA par exemple
 
     K = 3  # Cardinalité
-    frontier_yields, frontier_volatility, frontier_cost, frontier_weights = optimize(mu, Sigma, w0, K, population_size=50, generations=200, c=1)
+    frontier_yields, frontier_volatility, frontier_cost, frontier_weights = optimize(mu, Sigma, w0, K, delta_tol=0.01, population_size=50, generations=200, c=1)
 
     max_return_index = np.argmax(frontier_yields)
     w_max = frontier_weights[max_return_index]
