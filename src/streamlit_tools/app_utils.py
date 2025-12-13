@@ -42,7 +42,7 @@ def get_ticker_sector_map(dataset_path="datasets"):
 def calculate_markowitz_frontier(mu, Sigma, num_points=30):
     results = []
 
-    lambdas = np.linspace(0, 1, 25)
+    lambdas = np.linspace(0, 1, 50)
     frontier_yields, frontier_volatility, frontier_weights = level1.optimize_portfolio(lambdas, mu, Sigma)
 
     for r, v, w in zip(frontier_yields, frontier_volatility, frontier_weights):
@@ -58,7 +58,7 @@ def calculate_markowitz_frontier(mu, Sigma, num_points=30):
 def calculate_portfolio(mu, Sigma, w0, K, c):
     results = []
 
-    frontier_yields, frontier_volatility, frontier_cost, frontier_weights = level2.optimize(mu=mu, Sigma=Sigma, w0=w0, generations=50,delta_tol=0.01, K=K, c=c)
+    frontier_yields, frontier_volatility, frontier_cost, frontier_weights = level2.optimize(mu=mu, Sigma=Sigma, w0=w0, population_size=200, generations=300,delta_tol=0.01, K=K, c=c)
 
     for r, v, cost, w in zip(frontier_yields, frontier_volatility, frontier_cost, frontier_weights):
         results.append({

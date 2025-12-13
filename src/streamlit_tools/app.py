@@ -3,6 +3,7 @@ import streamlit as st
 from data.market_data import load_market_data
 from compute.frontier_markowitz import compute_markowitz_frontier
 from compute.frontier_level2 import compute_level2_frontier
+from level3.functions import PortfolioRobustness
 from plots.frontier_2d import plot_frontier_2d
 from plots.frontier_3d import plot_frontier_3d
 
@@ -20,6 +21,8 @@ w0[2]= 1.0  # Portefeuille initial (100% en la 3ème action)
 
 model, r_min, K, c = render_sidebar(mu)
 
+portfolio_robustness = PortfolioRobustness(df_prices, w0, K, 0, c=c)
+
 if model == "Markowitz":
     df_frontier = compute_markowitz_frontier(mu, sigma)
 else:
@@ -34,6 +37,8 @@ col1, col2 = st.columns([2, 1])
 
 with col1:
     st.subheader("Frontière Efficiente")
+
+    portfolio_robustness.skip_optimize(valid["weights"].to_numpy())
     if model == "Markowitz":
         fig = plot_frontier_2d(df_frontier, r_min, has_solution, best)
 
@@ -42,4 +47,4 @@ with col1:
     st.plotly_chart(fig, use_container_width=True)
 
 with col2:
-    render_details(best, mu, sector_map, K or 5)
+    render_details(best, mu, sector_map, K or 5, portfolio_robustness)
