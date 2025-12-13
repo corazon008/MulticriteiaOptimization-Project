@@ -1,7 +1,7 @@
 import plotly.graph_objects as go
 
 
-def plot_frontier_2d(df_frontier, r_min, has_solution, best):
+def plot_frontier_2d(df_frontier, r_min:float, has_solution:bool, best)-> go.Figure:
     fig = go.Figure()
 
     # Frontière

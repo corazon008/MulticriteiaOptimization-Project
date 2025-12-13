@@ -9,13 +9,14 @@ from plots.frontier_3d import plot_frontier_3d
 from ui.sidebar import render_sidebar
 from ui.details import render_details
 from state import init_state
-from graph import plot_level2_frontier
 
 st.set_page_config(layout="wide")
 init_state()
 
 df_prices, mu, sigma, sector_map = load_market_data()
-w0 = np.zeros_like(len(mu))
+num_assets = df_prices.shape[1]
+w0 = np.array(num_assets * [0])
+w0[2]= 1.0  # Portefeuille initial (100% en la 3ème action)
 
 model, r_min, K, c = render_sidebar(mu)
 
@@ -35,11 +36,10 @@ with col1:
     st.subheader("Frontière Efficiente")
     if model == "Markowitz":
         fig = plot_frontier_2d(df_frontier, r_min, has_solution, best)
-        st.plotly_chart(fig, use_container_width=True)
 
     else:
         fig = plot_frontier_3d(df_frontier, has_solution, best)
-        st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, use_container_width=True)
 
 with col2:
     render_details(best, mu, sector_map, K or 5)
