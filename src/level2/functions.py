@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 from pymoo.algorithms.moo.nsga2 import NSGA2
 from pymoo.optimize import minimize
 from pymoo.termination import get_termination
@@ -13,17 +14,19 @@ def nb_not_null_weights(weights: np.ndarray, threshold: float = 1e-6) -> int:
 
 class PortfolioNSGA2(ElementwiseProblem):
 
-    def __init__(self, mu, Sigma, w0, transaction_cost_rate=0.01):
+    def __init__(self, mu, Sigma, w0, K, delta_tol, c=0.01):
         self.mu = mu
         self.Sigma = Sigma
         self.w0 = w0
-        self.transaction_cost_rate = transaction_cost_rate
+        self.delta_tol = delta_tol
+        self.K = K
+        self.c = c
         n_assets = len(mu)
 
         super().__init__(n_var=n_assets,
                          n_obj=3,
                          n_ieq_constr=0,
-                         n_eq_constr=1,            # contrainte : somme = 1
+                         n_eq_constr=2,            # contrainte : somme = 1
                          xl=0.0,
                          xu=1.0)
 
@@ -31,13 +34,14 @@ class PortfolioNSGA2(ElementwiseProblem):
 
         f1 = -f_yield(w, self.mu)                       # minimiser → rendement max
         f2 = f_volatility(w, self.Sigma)                # minimiser volatilité
-        f3 = f_cost(self.w0, w, self.transaction_cost_rate)  # minimiser coût
+        f3 = f_cost(self.w0, w, self.c)  # minimiser coût
 
         # Contrainte égalité : somme(w) = 1
         h1 = np.sum(w) - 1
+        h2 = np.sum(w > self.delta_tol) - self.K
 
         out["F"] = [f1, f2, f3]
-        out["H"] = [h1]
+        out["H"] = [h1, h2]
 
 class CardinalityRepair(Repair):
     def __init__(self, K):
@@ -70,9 +74,9 @@ class CardinalityRepair(Repair):
         return X
 
 
-def optimize(mu: np.ndarray, Sigma: np.ndarray, w0: np.ndarray, K: int, population_size: int = 100, generations: int = 200, c:float=0.01) -> tuple[np.ndarray,np.ndarray,np.ndarray,np.ndarray]:
+def optimize(mu: pd.Series, Sigma: pd.Series, w0: np.ndarray, K: int, delta_tol, population_size: int = 100, generations: int = 200, c:float=0.01) -> tuple[np.ndarray,np.ndarray,np.ndarray,np.ndarray]:
 
-    problem = PortfolioNSGA2(mu, Sigma, w0)
+    problem = PortfolioNSGA2(mu, Sigma, w0, K, delta_tol=delta_tol, c=c)
 
     algorithm = NSGA2(
         pop_size=population_size,
