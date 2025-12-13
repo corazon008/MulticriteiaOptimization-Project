@@ -28,7 +28,7 @@ def plot_frontier_3d(df_frontier, has_solution, best):
             xaxis_title="Risque",
             yaxis_title="Rendement",
             zaxis_title="Coût",
-            camera=dict(eye=dict(x=1.6, y=1.6, z=0.5))
+            camera=dict(eye=dict(x=-1.8, y=-0.8, z=0.6))
         ),
         height=1000
     )
