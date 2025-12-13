@@ -35,7 +35,7 @@ def plot_markowitz_frontier(df_frontier, r_min, has_solution, best_portfolio):
     )
     return fig
 
-def plot_level2_frontier(df_frontier, r_min, has_solution, best_portfolio):
+def plot_level2_frontier(df_frontier, has_solution, best_portfolio):
     fig = go.Figure()
 
     # 1. Tous les points (Frontière)

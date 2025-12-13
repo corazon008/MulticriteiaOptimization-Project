@@ -4,8 +4,6 @@ import plotly.graph_objects as go
 def plot_frontier_3d(df_frontier, has_solution, best):
     fig = go.Figure()
 
-    print(df_frontier.head())
-
     fig.add_trace(go.Scatter3d(
         x=df_frontier["volatility"],
         y=df_frontier["return"],
