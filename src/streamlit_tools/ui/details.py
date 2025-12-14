@@ -3,9 +3,10 @@ import pandas as pd
 import plotly.express as px
 
 from level3.functions import PortfolioRobustness
+import numpy as np
 
 
-def render_details(best, mu, sector_map, K, portfolio_robustness:PortfolioRobustness):
+def render_details(best, mu, sector_map, K, portfolio_robustness: PortfolioRobustness):
     if best is None:
         st.error("Aucune solution")
         return
@@ -18,23 +19,43 @@ def render_details(best, mu, sector_map, K, portfolio_robustness:PortfolioRobust
     sharpe = best['return'] / best['volatility'] if best['volatility'] > 0 else 0
     sharpe_c.metric("Ratio de Sharpe", f"{sharpe:.2f}")
 
-    score = portfolio_robustness.compute_score(best['weights'], 0.7, 0.3)
-    score_c.metric("Robustesse", f"{score:.2f}")
+    # Calcul de la robustesse si possible
+    try:
+        score = portfolio_robustness.compute_score(best['weights'], 0.7, 0.3)
+    except Exception:
+        score = None
+    if score is not None:
+        score_c.metric("Robustesse", f"{score:.2f}")
+    else:
+        score_c.metric("Robustesse", "-")
 
     # 2. Analyse Structurelle (Macro)
     st.markdown("#### 🏗️ Allocation Macro-économique")
 
     # Récupération et nettoyage des poids
     weights = best['weights']
+
+    # Normaliser et convertir en numpy array si nécessaire
+    try:
+        if isinstance(weights, (list, tuple)):
+            weights_arr = np.array(weights, dtype=float)
+        elif hasattr(weights, 'to_numpy'):
+            weights_arr = weights.to_numpy(dtype=float)
+        else:
+            weights_arr = np.asarray(weights, dtype=float)
+    except Exception:
+        st.warning("Impossible de convertir les poids en tableau numérique.")
+        weights_arr = np.array([])
+
     asset_names = mu.index.tolist()
 
     # Gestion de formats (si weights est array ou liste)
-    if len(weights) == len(asset_names):
-        df_w = pd.DataFrame({'Ticker': asset_names, 'Poids': weights})
+    if weights_arr.size == len(asset_names):
+        df_w = pd.DataFrame({'Ticker': asset_names, 'Poids': weights_arr})
     else:
         # Cas dégradé (taille différente)
         st.warning("Dimension des poids incohérente avec les données.")
-        df_w = pd.DataFrame({'Ticker': [f'A{i}' for i in range(len(weights))], 'Poids': weights})
+        df_w = pd.DataFrame({'Ticker': [f'A{i}' for i in range(len(weights_arr))], 'Poids': weights_arr})
 
     # Ajout du secteur via le mapping
     df_w['Secteur'] = df_w['Ticker'].map(sector_map).fillna('Indeterminé')
