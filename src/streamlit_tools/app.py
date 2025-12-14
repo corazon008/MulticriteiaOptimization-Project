@@ -38,6 +38,7 @@ w0 = st.session_state.get("w0_array")
 if w0 is None:
     num_assets = df_prices.shape[1]
     w0 = np.zeros(num_assets)
+    w0[0] = 0.001
 
 # Affichage des options du modèle
 model, r_min, K, c = render_sidebar(mu)
