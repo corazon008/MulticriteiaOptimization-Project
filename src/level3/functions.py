@@ -27,6 +27,9 @@ class PortfolioRobustness:
                                                                                                              generations=generations,
                                                                                                              c=self.c)
 
+    def skip_optimize(self, frontier_weights):
+        self.frontier_weights = frontier_weights
+
     def boostrap_sample_df(self) -> dict[int, pd.DataFrame]:
         years = sorted(set(self.df.index.year))
         bootstrapped_dfs = {}
@@ -52,19 +55,9 @@ class PortfolioRobustness:
             vols.append(v)
         return np.array(rets), np.array(vols)
 
-    def compute_score(self, vol_per: float, cost_per: float, yield_per: float, yield_std_per: float,
-                      vol_std_per: float):
+    def compute_scores(self, yield_std_per: float, vol_std_per: float):
         """
-        Calcule un score composite pour chaque portefeuille de la frontière en tenant compte
-        des préférences utilisateur.
-        5 critères sont pris en compte :
-        - niveau de risque (volatilité)
-        - coûts de transaction
-        - niveau de rendement
-        - instabilité du rendement (écart-type des rendements annuels)
-        - instabilité du risque (écart-type des volatilités annuelles)
-        Les poids relatifs de chaque critère sont définis par les paramètres d'entrée.
-        Le score final est une somme pondérée de ces critères normalisés.
+        Calcule les scores de robustesse pour chaque portefeuille sur la frontière optimisée.
         """
         self.std_yields = []
         self.std_vols = []
@@ -74,12 +67,30 @@ class PortfolioRobustness:
             self.std_yields.append(np.std(rets))  # f4 = instabilité rendement
             self.std_vols.append(np.std(vols))
 
-        return (vol_per * normalize(self.frontier_volatility) +  # niveau de risque
-                cost_per * normalize(self.frontier_cost) +  # coûts
-                -yield_per * normalize(self.frontier_yields) +  # niveau de rendement
-                yield_std_per * normalize(self.std_yields) +  # instabilité rendement
+        return 1 - (yield_std_per * normalize(self.std_yields) +  # instabilité rendement
                 vol_std_per * normalize(self.std_vols)  # instabilité risque
                 )
+
+    def compute_score(self, w, yield_std_per: float, vol_std_per: float):
+        """
+        Calcule le score de robustesse pour un portefeuille donné w.
+        """
+        index = -1
+        for i, weights in enumerate(self.frontier_weights):
+            if np.allclose(weights, w):
+                index = i
+                break
+        if index == -1:
+            raise ValueError("Le portefeuille donné n'est pas dans la frontière optimisée.")
+        rets, vols = self.evaluate_portfolio_over_years(w)
+        std_yield = np.std(rets)
+        std_vol = np.std(vols)
+
+        score = 1 - (yield_std_per * std_yield +  # instabilité rendement
+                 vol_std_per * std_vol  # instabilité risque
+                 )
+
+        return score
 
 
 def normalize(x):

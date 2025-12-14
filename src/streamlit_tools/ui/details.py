@@ -2,8 +2,10 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
+from level3.functions import PortfolioRobustness
 
-def render_details(best, mu, sector_map, K):
+
+def render_details(best, mu, sector_map, K, portfolio_robustness:PortfolioRobustness):
     if best is None:
         st.error("Aucune solution")
         return
@@ -12,8 +14,12 @@ def render_details(best, mu, sector_map, K):
     c1.metric("Rendement", f"{best['return']:.2%}")
     c2.metric("Volatilité", f"{best['volatility']:.2%}")
 
+    sharpe_c, score_c = st.columns(2)
     sharpe = best['return'] / best['volatility'] if best['volatility'] > 0 else 0
-    st.metric("Ratio de Sharpe", f"{sharpe:.2f}")
+    sharpe_c.metric("Ratio de Sharpe", f"{sharpe:.2f}")
+
+    score = portfolio_robustness.compute_score(best['weights'], 0.7, 0.3)
+    score_c.metric("Robustesse", f"{score:.2f}")
 
     # 2. Analyse Structurelle (Macro)
     st.markdown("#### 🏗️ Allocation Macro-économique")
